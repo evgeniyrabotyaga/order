@@ -1,24 +1,44 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import Header from "./components/Header";
+import MenuList from "./components/MenuList";
+import Cart from "./components/Cart";
+import CartProvider from "./store/CartProvider";
 
 function App() {
+  const [cartOpen, setCartOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const onPageLoad = () => setIsLoading(false);
+    if (document.readyState === "complete") {
+      onPageLoad();
+    } else {
+      window.addEventListener("load", onPageLoad);
+      return () => window.removeEventListener("load", onPageLoad);
+    }
+  }, []);
+
+  const openCartHandler = () => {
+    setCartOpen(true);
+  };
+
+  const closeCartHandler = () => {
+    setCartOpen(false);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <React.Fragment>
+      {isLoading && (
+        <section className="loading-screen">
+          <div className="loading"></div>
+        </section>
+      )}
+      <CartProvider>
+        {cartOpen && <Cart onClose={closeCartHandler}></Cart>}
+        <Header onOpen={openCartHandler}></Header>
+        <MenuList></MenuList>
+      </CartProvider>
+    </React.Fragment>
   );
 }
 
